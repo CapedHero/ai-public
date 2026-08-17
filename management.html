@@ -233,11 +233,11 @@
 
     /* Variant C — list + detail inspector. */
     .variant-c { display: grid; grid-template-columns: minmax(310px, 390px) 1fr; gap: 12px; min-height: 590px; }
-    .workspace-nav { display: grid; grid-template-rows: auto auto 1fr; overflow: hidden; }
-    .tabs { display: flex; gap: 4px; padding: 8px; border-bottom: 1px solid var(--line); }
+    .workspace-nav { display: grid; grid-template-rows: auto auto minmax(0, 1fr); overflow: hidden; }
+    .tabs { display: flex; min-height: 49px; gap: 4px; padding: 8px; overflow-x: auto; overflow-y: hidden; border-bottom: 1px solid var(--line); }
     .tab { padding: 7px 9px; border: 1px solid transparent; border-radius: 7px; color: var(--muted); background: transparent; cursor: pointer; }
     .tab.active { border-color: #68432f; color: var(--ink); background: #25170f; }
-    .object-list { display: grid; align-content: start; gap: 2px; padding: 7px; }
+    .object-list { display: grid; min-height: 0; align-content: start; gap: 2px; padding: 7px; overflow-y: auto; }
     .object-row {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -261,6 +261,9 @@
     .detail-stat:last-child { border-bottom: 0; }
     .action-dock { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 11px 14px; border-top: 1px solid var(--line); background: #141210; }
     .action-dock .plan-summary { flex: 1; }
+    .review-stack { display: grid; align-content: start; gap: 10px; }
+    .review-card { padding: 12px; border: 1px solid #3a342e; border-radius: 10px; background: #151310; }
+    .review-card.warn { border-color: #654d28; background: #211a11; }
 
     .tag {
       display: inline-flex;
@@ -494,31 +497,95 @@
       </main>`;
     }
 
-    function variantC() {
+    function currentCView() {
+      const requested = new URLSearchParams(location.search).get("view")?.toLowerCase();
+      return ["cycle", "manifestations", "emberkin", "supply"].includes(requested) ? requested : "cycle";
+    }
+
+    function cTabs(view) {
+      const tabs = [["cycle", "Cycle"], ["manifestations", "Manifestations"], ["emberkin", "Emberkin"], ["supply", "Supply"]];
+      return `<div class="tabs">${tabs.map(([key, label]) => `<button class="tab ${view === key ? "active" : ""}" data-c-view="${key}">${label}</button>`).join("")}</div>`;
+    }
+
+    function cIndex(view) {
+      if (view === "cycle") return creatorActions(true);
+      if (view === "manifestations") {
+        const selected = manifestations[1];
+        return manifestations.map(item => `<button class="object-row ${item.id === selected.id ? "active" : ""}" data-demo-action="Inspect ${item.name}"><strong>${item.name}</strong><small>${item.type} · ${item.meta}</small><span class="tag ${item.warning ? "warning" : "available"}">${item.state}</span></button>`).join("");
+      }
+      if (view === "emberkin") return `
+        <button class="object-row active" data-demo-action="Inspect Sustained pool"><strong>Sustained</strong><small>3 Allocated · 2 Unallocated</small><span class="tag available">5</span></button>
+        <button class="object-row" data-demo-action="Inspect Unfed pool"><strong>Unfed</strong><small>0 Allocated · 1 Unallocated</small><span class="tag warning">1</span></button>
+        <button class="object-row" data-demo-action="Inspect Fading pool"><strong>Fading</strong><small>Cannot remain Allocated</small><span class="tag">0</span></button>`;
+      return `
+        <button class="object-row active" data-demo-action="Inspect Living Embers"><strong>Living Embers</strong><small>Sustenance · 7 available</small><span class="tag available">7</span></button>
+        <button class="object-row" data-demo-action="Inspect Flame Essence"><strong>Flame Essence</strong><small>1 available · 3 committed</small><span class="tag available">1</span></button>
+        <button class="object-row" data-demo-action="Inspect Essence Shards"><strong>Essence Shards</strong><small>2 of 4 toward Essence</small><span class="tag">2/4</span></button>`;
+    }
+
+    function cCycleInspector() {
+      return `<section class="panel inspector">
+        <div class="panel-head"><div><span class="subtle">Cycle planner and review</span><h3 style="margin-top:3px">Cycle ${snapshot.cycle} · Stillness</h3></div><span class="tag queued">Editable</span></div>
+        <div class="phase-ribbon"><div class="phase-step current"><strong>1 · Stillness</strong>Plan and commit</div><div class="phase-step"><strong>2 · Surge</strong>Manifest</div><div class="phase-step"><strong>3 · Growth</strong>Kindle + progress</div><div class="phase-step"><strong>4 · Harvest</strong>Produce + sustain</div></div>
+        <div class="inspector-main">
+          <div class="stack">
+            <div class="row"><h3 class="section-title">This Cycle</h3><span class="subtle">Costs are reserved until the plan is changed</span></div>
+            <div class="queue-lane">
+              <div class="queue-slot"><small>Manifestation · Surge</small><div class="subtle">Empty · one slot available</div></div>
+              <div class="queue-slot filled"><small>Growth</small><div class="row"><div><strong class="js-plan-slot">Kindle Emberkin</strong><div class="subtle">1 Living Ember · 1/1 Ember Cradle slot</div></div><button class="quiet-button" data-demo-action="Remove Kindle Emberkin">Remove</button></div></div>
+              <div class="queue-slot"><small>Demanifestations · next Cycle</small><div class="subtle">None · unlimited concrete targets</div></div>
+            </div>
+            <div class="review-card"><div class="row"><strong>Requirements check</strong><span class="tag available">Ready</span></div><div class="detail-stat"><span>Living Ember reserved</span><strong>1 / 7</strong></div><div class="detail-stat"><span>Habitat after Growth</span><strong>7 / 8</strong></div><div class="detail-stat"><span>Kindling slots</span><strong>1 / 1</strong></div></div>
+          </div>
+          <div class="review-stack">
+            <div class="review-card"><div class="row"><h3 class="section-title">Expected outcome</h3><span class="tag queued">Review</span></div><div class="preview-line"><span class="preview-number">+1</span><span>Emberkin during Growth</span></div><div class="preview-line"><span class="preview-number">+1</span><span>Emberheart progress</span></div><div class="preview-line"><span class="preview-number">−2</span><span>Living Embers after production and Sustenance</span></div></div>
+            <div class="review-card warn"><div class="row"><strong>Sustenance warning</strong><span class="status-chip warn">1 Unfed</span></div><p class="flow-note">The most deprived Emberkin is fed first. With the current Harvest it should fully recover; no one becomes Fading.</p></div>
+            <div class="review-card"><div class="row"><strong>Emberheart</strong><strong>1 / 3</strong></div><div class="progress" style="margin:8px 0"><span></span></div><div class="flow-note">Crucible fully staffed · +1 next Growth</div></div>
+          </div>
+        </div>
+        <div class="action-dock"><div class="plan-summary"><span class="subtle">Ready to lock</span><div><strong>1 queued Action</strong> · requirements satisfied · 1 recoverable warning</div></div><button class="quiet-button" data-demo-action="Review Cycle consequences">Review consequences</button><button class="cta" style="width:auto;padding:0 18px" data-demo-action="Manifest Intent">Manifest Intent</button></div>
+      </section>`;
+    }
+
+    function cManifestationInspector() {
       const selected = manifestations[1];
+      return `<section class="panel inspector">
+        <div class="panel-head"><div><span class="subtle">Manifestation details</span><h3 style="margin-top:3px">${selected.name}</h3></div><span class="tag warning">${selected.state}</span></div>
+        <div class="inspector-main">
+          <div class="stack">
+            <div class="detail-hero"><span class="prototype-note">Resource Source</span><h3>Emberwell</h3><p class="flow-note">Turns Emberkin labour into Living Embers and Flame Essence Shards during Harvest.</p><div class="detail-stat"><span>Labour requirement</span><strong>0 / 1 Emberkin</strong></div><div class="detail-stat"><span>Current Harvest</span><strong>Produces nothing</strong></div><div class="detail-stat"><span>When staffed</span><strong>+4 Living Embers · +1 Shard</strong></div></div>
+            <section><h3 class="section-title">Actions on this Manifestation</h3><p class="flow-note">These Actions belong here—not in the global Creator Action list.</p><div class="button-row"><button class="action-button" data-demo-action="Commit Emberkin · Emberwell #2">Commit Emberkin</button><button class="quiet-button" disabled>Withdraw Emberkin</button><button class="danger-button" data-demo-action="Demanifest · Emberwell #2">Demanifest</button></div></section>
+          </div>
+          <div class="stack">${poolsPanel()}${resourcesPanel()}<section class="panel"><div class="panel-head"><h3>Emberheart</h3><span class="heart-icon">♥</span></div><div class="panel-body"><div class="row"><strong>Progress</strong><strong>1 / 3</strong></div><div class="progress" style="margin:8px 0"><span></span></div><div class="flow-note">Crucible fully staffed · +1 next Growth</div></div></section></div>
+        </div>
+        <div class="action-dock"><div class="plan-summary"><span class="subtle">Cycle plan</span><div><strong class="js-plan-slot">Kindle Emberkin</strong> · no Manifestation · no Demanifestation</div></div><button class="quiet-button" data-c-view="cycle">Open Cycle planner</button><button class="cta" style="width:auto;padding:0 18px" data-demo-action="Manifest Intent">Manifest Intent</button></div>
+      </section>`;
+    }
+
+    function cEmberkinInspector() {
+      return `<section class="panel inspector"><div class="panel-head"><div><span class="subtle">Aggregate Creature management</span><h3 style="margin-top:3px">Emberkin pools</h3></div><span class="tag warning">1 Unfed</span></div><div class="inspector-main"><div class="stack">${poolsPanel()}<div class="review-card"><h3 class="section-title">Automatic Sustenance priority</h3><div class="detail-stat"><span>1</span><strong>Fading</strong></div><div class="detail-stat"><span>2</span><strong>Unfed · Allocated first within state</strong></div><div class="detail-stat"><span>3</span><strong>Sustained · Allocated first within state</strong></div></div></div><div class="review-stack"><div class="review-card"><strong>No individual Emberkin identities</strong><p class="flow-note">Commitments draw generic Emberkin from the eligible pool. Only counts, Sustenance state, and allocation state are shown.</p></div><div class="review-card warn"><strong>Current warning</strong><p class="flow-note">One Unallocated Emberkin is Unfed. Current production should fully restore it this Harvest.</p></div></div></div><div class="action-dock"><div class="plan-summary"><span class="subtle">Population</span><div><strong>6 / 8 Emberkin</strong> · 3 Allocated · 3 Unallocated</div></div><button class="quiet-button" data-c-view="cycle">Open Cycle planner</button></div></section>`;
+    }
+
+    function cSupplyInspector() {
+      return `<section class="panel inspector"><div class="panel-head"><div><span class="subtle">Realm supply details</span><h3 style="margin-top:3px">Production and reserves</h3></div><span class="tag available">Stable this Cycle</span></div><div class="inspector-main"><div class="stack">${resourcesPanel()}<div class="review-card"><h3 class="section-title">Harvest projection</h3><div class="detail-stat"><span>Emberwell production</span><strong>+4 Living Embers · +1 Shard</strong></div><div class="detail-stat"><span>Emberkin Sustenance</span><strong>−6 Living Embers</strong></div><div class="detail-stat"><span>Expected balance</span><strong>5 Living Embers · 3/4 Shards</strong></div></div></div><div class="review-stack"><div class="review-card"><strong>Flame Essence</strong><p class="flow-note">1 available for a Manifestation. 3 remain committed to Emberheart.</p></div><div class="review-card"><strong>Essence formation</strong><p class="flow-note">The next operated Emberwell Harvest brings the Realm to 3/4 Shards; no new Essence forms this Cycle.</p></div></div></div><div class="action-dock"><div class="plan-summary"><span class="subtle">Projected Harvest</span><div><strong>Recover Unfed pressure</strong> · keep 5 Living Embers</div></div><button class="quiet-button" data-c-view="cycle">Open Cycle planner</button></div></section>`;
+    }
+
+    function variantC() {
+      const view = currentCView();
+      const detail = view === "cycle" ? cCycleInspector() : view === "manifestations" ? cManifestationInspector() : view === "emberkin" ? cEmberkinInspector() : cSupplyInspector();
       return `${header()}<main class="variant-c">
         <section class="panel workspace-nav">
           <div class="panel-head"><h3>Realm index</h3><span class="status-chip warn">2 need attention</span></div>
-          <div class="tabs"><button class="tab">Actions</button><button class="tab active">Manifestations</button><button class="tab">Emberkin</button><button class="tab">Supply</button></div>
-          <div class="object-list">${manifestations.map(item => `<button class="object-row ${item.id === selected.id ? "active" : ""}" data-demo-action="Inspect ${item.name}"><strong>${item.name}</strong><small>${item.type} · ${item.meta}</small><span class="tag ${item.warning ? "warning" : "available"}">${item.state}</span></button>`).join("")}</div>
+          ${cTabs(view)}
+          <div class="object-list">${cIndex(view)}</div>
         </section>
-        <section class="panel inspector">
-          <div class="panel-head"><div><span class="subtle">Manifestation details</span><h3 style="margin-top:3px">${selected.name}</h3></div><span class="tag warning">${selected.state}</span></div>
-          <div class="inspector-main">
-            <div class="stack">
-              <div class="detail-hero"><span class="prototype-note">Resource Source</span><h3>Emberwell</h3><p class="flow-note">Turns Emberkin labour into Living Embers and Flame Essence Shards during Harvest.</p><div class="detail-stat"><span>Labour requirement</span><strong>0 / 1 Emberkin</strong></div><div class="detail-stat"><span>Current Harvest</span><strong>Produces nothing</strong></div><div class="detail-stat"><span>When staffed</span><strong>+4 Living Embers · +1 Shard</strong></div></div>
-              <section><h3 class="section-title">Actions on this Manifestation</h3><p class="flow-note">These Actions belong here—not in the global Creator Action list.</p><div class="button-row"><button class="action-button" data-demo-action="Commit Emberkin · Emberwell #2">Commit Emberkin</button><button class="quiet-button" disabled>Withdraw Emberkin</button><button class="danger-button" data-demo-action="Demanifest · Emberwell #2">Demanifest</button></div></section>
-            </div>
-            <div class="stack">${poolsPanel()}${resourcesPanel()}<section class="panel"><div class="panel-head"><h3>Emberheart</h3><span class="heart-icon">♥</span></div><div class="panel-body"><div class="row"><strong>Progress</strong><strong>1 / 3</strong></div><div class="progress" style="margin:8px 0"><span></span></div><div class="flow-note">Crucible fully staffed · +1 next Growth</div></div></section></div>
-          </div>
-          <div class="action-dock"><div class="plan-summary"><span class="subtle">Cycle plan</span><div><strong class="js-plan-slot">Kindle Emberkin</strong> · no Manifestation · no Demanifestation</div></div><button class="quiet-button" data-demo-action="Review Cycle plan">Review plan</button><button class="cta" style="width:auto;padding:0 18px" data-demo-action="Manifest Intent">Manifest Intent</button></div>
-        </section>
+        ${detail}
       </main>`;
     }
 
     function currentVariant() {
       const requested = new URLSearchParams(location.search).get("variant")?.toUpperCase();
-      return variants.find(item => item.key === requested) || variants[0];
+      return variants.find(item => item.key === requested) || variants[2];
     }
 
     function render() {
@@ -526,6 +593,13 @@
       document.querySelector("#app").innerHTML = `<div class="prototype-shell">${active.key === "A" ? variantA() : active.key === "B" ? variantB() : variantC()}</div>`;
       document.querySelector("#variant-label").textContent = `${active.key} — ${active.name}`;
       document.querySelectorAll("[data-demo-action]").forEach(button => button.addEventListener("click", () => showFeedback(button.dataset.demoAction)));
+      document.querySelectorAll("[data-c-view]").forEach(button => button.addEventListener("click", () => {
+        const url = new URL(location.href);
+        url.searchParams.set("variant", "C");
+        url.searchParams.set("view", button.dataset.cView);
+        history.replaceState({}, "", url);
+        render();
+      }));
     }
 
     function showFeedback(action) {
