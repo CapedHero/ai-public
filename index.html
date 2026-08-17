@@ -926,7 +926,8 @@ html&gt;body{padding:0}&lt;/style&gt;
             &lt;tr&gt;&lt;td&gt;Flame Essence&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-essence&quot;&gt;3&lt;/td&gt;&lt;/tr&gt;
             &lt;tr&gt;&lt;td&gt;Essence Shards&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-shards&quot;&gt;0/4&lt;/td&gt;&lt;/tr&gt;
             &lt;tr&gt;&lt;td&gt;Living Embers&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-embers&quot;&gt;2&lt;/td&gt;&lt;/tr&gt;
-            &lt;tr&gt;&lt;td&gt;Emberkin&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-population&quot;&gt;0&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;Emberkin / Habitat&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-population&quot;&gt;0/0&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;Unfed / Fading&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-deprivation&quot;&gt;0 / 0&lt;/td&gt;&lt;/tr&gt;
             &lt;tr&gt;&lt;td&gt;Emberheart&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-project&quot;&gt;0/3&lt;/td&gt;&lt;/tr&gt;
           &lt;/tbody&gt;
         &lt;/table&gt;
@@ -1005,7 +1006,8 @@ html&gt;body{padding:0}&lt;/style&gt;
       [&quot;cycle&quot;, &quot;Resolve Cycle 4&quot;, advance],
       [&quot;action&quot;, &quot;Kindle third Emberkin&quot;, kindle],
       [&quot;cycle&quot;, &quot;Resolve Cycle 5&quot;, advance],
-      [&quot;passive&quot;, &quot;Resolve Cycle 6 — production only&quot;, advance],
+      [&quot;action&quot;, &quot;Kindle fourth Emberkin&quot;, kindle],
+      [&quot;cycle&quot;, &quot;Resolve Cycle 6&quot;, advance],
       [&quot;passive&quot;, &quot;Resolve Cycle 7 — production forms 1 Essence&quot;, advance],
       [&quot;action&quot;, &quot;Manifest Crucible of Becoming&quot;, s =&gt; manifest(s, &quot;crucible&quot;)],
       [&quot;cycle&quot;, &quot;Resolve Cycle 8&quot;, advance],
@@ -1040,17 +1042,19 @@ html&gt;body{padding:0}&lt;/style&gt;
       [&quot;cycle&quot;, &quot;Resolve Cycle 4&quot;, advance],
       [&quot;action&quot;, &quot;Kindle third Emberkin&quot;, kindle],
       [&quot;cycle&quot;, &quot;Resolve Cycle 5&quot;, advance],
-      [&quot;passive&quot;, &quot;Resolve Cycle 6 — production only&quot;, advance],
+      [&quot;action&quot;, &quot;Kindle fourth Emberkin&quot;, kindle],
+      [&quot;cycle&quot;, &quot;Resolve Cycle 6&quot;, advance],
       [&quot;passive&quot;, &quot;Resolve Cycle 7 — production forms 1 Essence&quot;, advance],
       [&quot;action&quot;, &quot;Manifest a second Cinder Nest&quot;, s =&gt; manifest(s, &quot;nest&quot;)],
       [&quot;cycle&quot;, &quot;Resolve Cycle 8&quot;, advance],
-      [&quot;action&quot;, &quot;Kindle fourth Emberkin&quot;, kindle],
+      [&quot;action&quot;, &quot;Kindle fifth Emberkin&quot;, kindle],
       [&quot;cycle&quot;, &quot;Resolve Cycle 9&quot;, advance],
-      [&quot;passive&quot;, &quot;Resolve Cycle 10 — production only&quot;, advance],
+      [&quot;action&quot;, &quot;Kindle sixth Emberkin&quot;, kindle],
+      [&quot;cycle&quot;, &quot;Resolve Cycle 10&quot;, advance],
       [&quot;passive&quot;, &quot;Resolve Cycle 11 — production forms 1 Essence&quot;, advance],
       [&quot;action&quot;, &quot;Manifest a second Emberwell&quot;, s =&gt; manifest(s, &quot;well&quot;)],
       [&quot;cycle&quot;, &quot;Resolve Cycle 12&quot;, advance],
-      [&quot;action&quot;, &quot;Commit fourth Emberkin to second Emberwell&quot;, s =&gt; commit(s, &quot;well&quot;)],
+      [&quot;action&quot;, &quot;Commit Emberkin to second Emberwell&quot;, s =&gt; commit(s, &quot;well&quot;)],
       [&quot;passive&quot;, &quot;Resolve Cycle 13 — doubled production&quot;, advance],
       [&quot;passive&quot;, &quot;Resolve Cycle 14 — doubled production forms 1 Essence&quot;, advance],
       [&quot;action&quot;, &quot;Manifest Crucible of Becoming&quot;, s =&gt; manifest(s, &quot;crucible&quot;)],
@@ -1081,7 +1085,8 @@ html&gt;body{padding:0}&lt;/style&gt;
       [&quot;cycle&quot;, &quot;Resolve Cycle 5&quot;, advance],
       [&quot;action&quot;, &quot;Kindle third Emberkin&quot;, kindle],
       [&quot;cycle&quot;, &quot;Resolve Cycle 6&quot;, advance],
-      [&quot;passive&quot;, &quot;Resolve Cycle 7 — production only&quot;, advance],
+      [&quot;action&quot;, &quot;Kindle fourth Emberkin&quot;, kindle],
+      [&quot;cycle&quot;, &quot;Resolve Cycle 7&quot;, advance],
       [&quot;passive&quot;, &quot;Resolve Cycle 8 — production forms 1 Essence&quot;, advance],
       [&quot;action&quot;, &quot;Manifest Crucible of Becoming&quot;, s =&gt; manifest(s, &quot;crucible&quot;)],
       [&quot;cycle&quot;, &quot;Resolve Cycle 9&quot;, advance],
@@ -1108,7 +1113,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   function fresh() {
     return {
       cycle: 1, resolved: 0, pace: Number(root.querySelector(&quot;#mh-pace&quot;).value),
-      essence: 3, shards: 0, embers: 2, population: 0,
+      essence: 3, shards: 0, embers: 2, population: 0, unfed: 0, fading: 0,
       queuedManifest: null, queuedKindle: 0, buildings: [],
       projectActive: false, progress: 0, complete: false,
       detail: &quot;Choose the first action.&quot;, passiveNow: 0, passiveMax: 0
@@ -1116,6 +1121,10 @@ html&gt;body{padding:0}&lt;/style&gt;
   }
 
   function usable(s, building) { return building.usableAt &lt;= s.cycle; }
+
+  function capacity(s) {
+    return s.buildings.filter(item =&gt; item.kind === &quot;nest&quot; &amp;&amp; usable(s, item)).length * 4;
+  }
 
   function manifest(s, kind) {
     s.essence -= 1;
@@ -1139,6 +1148,25 @@ html&gt;body{padding:0}&lt;/style&gt;
     s.essence -= 3;
     s.projectActive = true;
     s.detail = &quot;Three Flame Essence committed to Shape Emberheart.&quot;;
+  }
+
+  function sustain(s, newborns) {
+    let embers = s.embers;
+    const sustained = s.population - s.unfed - s.fading;
+    const fedFading = Math.min(s.fading, embers);
+    embers -= fedFading;
+    const perished = s.fading - fedFading;
+    const fedUnfed = Math.min(s.unfed, embers);
+    embers -= fedUnfed;
+    const nextFading = s.unfed - fedUnfed;
+    const fedSustained = Math.min(sustained, embers);
+    embers -= fedSustained;
+    const nextUnfed = sustained - fedSustained;
+    s.population = s.population - perished + newborns;
+    s.fading = nextFading;
+    s.unfed = nextUnfed;
+    s.embers = embers;
+    return { perished };
   }
 
   function advance(s) {
@@ -1176,8 +1204,10 @@ html&gt;body{padding:0}&lt;/style&gt;
         s.essence += 1;
         notes.push(&quot;1 Flame Essence formed&quot;);
       }
-      s.embers -= s.population;
-      s.population += newborns;
+      const deprivation = sustain(s, newborns);
+      if (s.unfed) notes.push(`${s.unfed} Emberkin Unfed`);
+      if (s.fading) notes.push(`${s.fading} Emberkin Fading`);
+      if (deprivation.perished) notes.push(`${deprivation.perished} Emberkin Perished`);
     }
 
     s.resolved += 1;
@@ -1202,7 +1232,8 @@ html&gt;body{padding:0}&lt;/style&gt;
     root.querySelector(&quot;#mh-essence&quot;).textContent = state.essence;
     root.querySelector(&quot;#mh-shards&quot;).textContent = `${state.shards}/4`;
     root.querySelector(&quot;#mh-embers&quot;).textContent = state.embers;
-    root.querySelector(&quot;#mh-population&quot;).textContent = state.population;
+    root.querySelector(&quot;#mh-population&quot;).textContent = `${state.population}/${capacity(state)}`;
+    root.querySelector(&quot;#mh-deprivation&quot;).textContent = `${state.unfed} / ${state.fading}`;
     root.querySelector(&quot;#mh-project&quot;).textContent = state.complete ? &quot;Complete&quot; : `${state.progress}/3`;
     root.querySelector(&quot;#mh-project&quot;).className = state.complete ? &quot;text-end mh-complete&quot; : &quot;text-end&quot;;
     root.querySelector(&quot;#mh-step-title&quot;).textContent = step === 0 ? &quot;Empty Realm&quot; : route[step - 1][1];
