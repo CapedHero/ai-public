@@ -924,7 +924,7 @@ html&gt;body{padding:0}&lt;/style&gt;
           &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Resource&lt;/th&gt;&lt;th class=&quot;text-end&quot;&gt;Amount&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
           &lt;tbody&gt;
             &lt;tr&gt;&lt;td&gt;Flame Essence&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-essence&quot;&gt;3&lt;/td&gt;&lt;/tr&gt;
-            &lt;tr&gt;&lt;td&gt;Essence Shards&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-shards&quot;&gt;0/4&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;Flame Essence Shards&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-shards&quot;&gt;0/4&lt;/td&gt;&lt;/tr&gt;
             &lt;tr&gt;&lt;td&gt;Living Embers&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-embers&quot;&gt;2&lt;/td&gt;&lt;/tr&gt;
             &lt;tr&gt;&lt;td&gt;Emberkin / Habitat&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-population&quot;&gt;0/0&lt;/td&gt;&lt;/tr&gt;
             &lt;tr&gt;&lt;td&gt;Unfed / Fading&lt;/td&gt;&lt;td class=&quot;text-end&quot; id=&quot;mh-deprivation&quot;&gt;0 / 0&lt;/td&gt;&lt;/tr&gt;
@@ -1197,7 +1197,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       if (wells) {
         s.embers += wells * 4;
         s.shards += wells;
-        notes.push(`${wells * 4} Living Embers + ${wells} Shard produced`);
+        notes.push(`${wells * 4} Living Embers + ${wells} Flame Essence Shard${wells === 1 ? &quot;&quot; : &quot;s&quot;} produced`);
       }
       while (s.shards &gt;= 4) {
         s.shards -= 4;

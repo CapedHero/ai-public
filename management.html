@@ -190,6 +190,12 @@
     .creator-action strong { font-size: 13px; }
     .creator-action p { grid-column: 1; margin: 0; color: var(--muted); font-size: 11px; }
     .creator-action button { grid-column: 2; grid-row: 1 / span 2; }
+    .action-groups { display: grid; gap: 12px; }
+    .action-group { display: grid; gap: 6px; }
+    .action-group + .action-group { padding-top: 11px; border-top: 1px solid #332e29; }
+    .action-group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 0 3px; }
+    .action-group-head strong { color: var(--gold); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+    .action-group-head small { color: var(--muted); font-size: 10px; text-align: right; }
 
     .plan-card { border: 1px solid #68442f; border-radius: 10px; background: #20150f; }
     .plan-item { padding: 10px; border-bottom: 1px solid #4c3224; }
@@ -371,14 +377,14 @@
 
     const snapshot = {
       cycle: 18,
-      resources: { essence: 1, shards: 2, embers: 7 },
+      resources: { essence: 1, flameEssenceShards: 2, embers: 7 },
       population: { total: 6, capacity: 8, sustainedAllocated: 3, sustainedUnallocated: 2, unfedUnallocated: 1, fading: 0 },
       project: { name: "Emberheart", progress: 1, target: 3, essence: 3 },
       plan: { manifestation: "None", growth: "Kindle Emberkin", removals: "None" }
     };
 
     const manifestations = [
-      { id: 1, name: "Emberwell #1", type: "Resource Source", state: "Fully staffed", meta: "1/1 Emberkin · Harvest: +4 Living Embers, +1 Shard", actions: ["Withdraw Emberkin", "Demanifest"] },
+      { id: 1, name: "Emberwell #1", type: "Resource Source", state: "Fully staffed", meta: "1/1 Emberkin · Harvest: +4 Living Embers, +1 Flame Essence Shard", actions: ["Withdraw Emberkin", "Demanifest"] },
       { id: 2, name: "Emberwell #2", type: "Resource Source", state: "Understaffed", meta: "0/1 Emberkin · Produces nothing until staffed", actions: ["Commit Emberkin", "Demanifest"], warning: true },
       { id: 3, name: "Crucible of Becoming", type: "Transfiguration", state: "Supporting Emberheart", meta: "2/2 Emberkin · Growth: +1 progress", actions: ["Withdraw Emberkin", "Abandon Transfiguration", "Demanifest"] },
       { id: 4, name: "Cinder Nest #1", type: "Habitat", state: "Available", meta: "+4 Emberkin Habitat capacity", actions: ["Demanifest"] },
@@ -394,7 +400,7 @@
           <div class="phase-line"><span class="current">Stillness</span><span>›</span><span>Surge</span><span>›</span><span>Growth</span><span>›</span><span>Harvest</span></div>
           <div class="header-resources">
             <span class="resource-chip">Essence <strong>${snapshot.resources.essence}</strong></span>
-            <span class="resource-chip">Shards <strong>${snapshot.resources.shards}/4</strong></span>
+            <span class="resource-chip">Flame Essence Shards <strong>${snapshot.resources.flameEssenceShards}/4</strong></span>
             <span class="resource-chip">Living Embers <strong>${snapshot.resources.embers}</strong></span>
             <span class="status-chip warn">Unfed <strong>1</strong></span>
           </div>
@@ -425,10 +431,10 @@
         <div class="panel-head"><h3>Realm supply</h3></div>
         <div class="panel-body stack">
           <div class="row"><span>Flame Essence</span><strong>1 available · 3 committed</strong></div>
-          <div class="row"><span>Essence Shards</span><strong>2 / 4</strong></div>
+          <div class="row"><span>Flame Essence Shards</span><strong>2 / 4</strong></div>
           <div class="row"><span>Living Embers</span><strong>7</strong></div>
           <div class="divider"></div>
-          <div class="flow-note">Projected Harvest: +4 Living Embers, +1 Shard, −6 Sustenance.</div>
+          <div class="flow-note">Projected Harvest: +4 Living Embers, +1 Flame Essence Shard, −6 Sustenance.</div>
         </div>
       </section>`;
     }
@@ -442,18 +448,27 @@
     }
 
     function creatorActions(compact = false) {
-      const actions = [
-        ["Kindle Emberkin", "Queued · 1 Living Ember · 1/1 Cradle slot", true, false],
-        ["Manifest Cinder Nest", "Available · 1 Flame Essence", false, false],
-        ["Manifest Emberwell", "Available · 1 Flame Essence", false, false],
-        ["Manifest Ember Cradle", "Available · 1 Flame Essence", false, false],
-        ["Manifest Crucible", "Unavailable · Manifestation slot already used", false, true],
-        ["Shape Emberheart", "Unavailable · Transfiguration already active", false, true]
+      const groups = [
+        ["Kindle", "Create Creatures during Growth", [
+          ["Emberkin", "Kindle Emberkin", "Queued · 1 Living Ember · 1/1 Cradle slot", true, false]
+        ]],
+        ["Manifest", "Bring one creation into existence during Surge", [
+          ["Cinder Nest", "Manifest Cinder Nest", "Available · 1 Flame Essence", false, false],
+          ["Emberwell", "Manifest Emberwell", "Available · 1 Flame Essence", false, false],
+          ["Ember Cradle", "Manifest Ember Cradle", "Available · 1 Flame Essence", false, false],
+          ["Crucible of Becoming", "Manifest Crucible of Becoming", "Unavailable · Manifestation slot already used", false, true]
+        ]],
+        ["Transfigure", "Alter the Creator's Godform during Growth", [
+          ["Emberheart", "Shape Emberheart", "Unavailable · Transfiguration already active", false, true]
+        ]]
       ];
-      return `<div class="stack">${actions.map(([name, note, queued, disabled]) => compact
-        ? `<button class="object-row ${queued ? "active" : ""}" ${disabled ? "disabled" : ""} data-demo-action="${name}"><strong>${name}</strong><small>${note}</small><span class="tag ${disabled ? "" : queued ? "queued" : "available"}">${disabled ? "Unavailable" : queued ? "Queued" : "Available"}</span></button>`
-        : `<div class="creator-action"><strong>${name}</strong><p>${note}</p><button class="${queued ? "quiet-button" : "action-button"}" ${disabled ? "disabled" : ""} data-demo-action="${name}">${queued ? "Review" : "Queue"}</button></div>`
-      ).join("")}</div>`;
+      return `<div class="action-groups">${groups.map(([category, description, actions]) => `<section class="action-group">
+        <div class="action-group-head"><strong>${category}</strong><small>${description}</small></div>
+        ${actions.map(([target, fullName, note, queued, disabled]) => compact
+          ? `<button class="object-row ${queued ? "active" : ""}" ${disabled ? "disabled" : ""} data-demo-action="${fullName}"><strong>${target}</strong><small>${note}</small><span class="tag ${disabled ? "" : queued ? "queued" : "available"}">${disabled ? "Unavailable" : queued ? "Queued" : "Available"}</span></button>`
+          : `<div class="creator-action"><strong>${target}</strong><p>${note}</p><button class="${queued ? "quiet-button" : "action-button"}" ${disabled ? "disabled" : ""} data-demo-action="${fullName}">${queued ? "Review" : "Queue"}</button></div>`
+        ).join("")}
+      </section>`).join("")}</div>`;
     }
 
     function planPanel() {
@@ -520,7 +535,7 @@
       return `
         <button class="object-row active" data-demo-action="Inspect Living Embers"><strong>Living Embers</strong><small>Sustenance · 7 available</small><span class="tag available">7</span></button>
         <button class="object-row" data-demo-action="Inspect Flame Essence"><strong>Flame Essence</strong><small>1 available · 3 committed</small><span class="tag available">1</span></button>
-        <button class="object-row" data-demo-action="Inspect Essence Shards"><strong>Essence Shards</strong><small>2 of 4 toward Essence</small><span class="tag">2/4</span></button>`;
+        <button class="object-row" data-demo-action="Inspect Flame Essence Shards"><strong>Flame Essence Shards</strong><small>2 of 4 toward Flame Essence</small><span class="tag">2/4</span></button>`;
     }
 
     function cCycleInspector() {
@@ -553,7 +568,7 @@
         <div class="panel-head"><div><span class="subtle">Manifestation details</span><h3 style="margin-top:3px">${selected.name}</h3></div><span class="tag warning">${selected.state}</span></div>
         <div class="inspector-main">
           <div class="stack">
-            <div class="detail-hero"><span class="prototype-note">Resource Source</span><h3>Emberwell</h3><p class="flow-note">Turns Emberkin labour into Living Embers and Flame Essence Shards during Harvest.</p><div class="detail-stat"><span>Labour requirement</span><strong>0 / 1 Emberkin</strong></div><div class="detail-stat"><span>Current Harvest</span><strong>Produces nothing</strong></div><div class="detail-stat"><span>When staffed</span><strong>+4 Living Embers · +1 Shard</strong></div></div>
+            <div class="detail-hero"><span class="prototype-note">Resource Source</span><h3>Emberwell</h3><p class="flow-note">Turns Emberkin labour into Living Embers and Flame Essence Shards during Harvest.</p><div class="detail-stat"><span>Labour requirement</span><strong>0 / 1 Emberkin</strong></div><div class="detail-stat"><span>Current Harvest</span><strong>Produces nothing</strong></div><div class="detail-stat"><span>When staffed</span><strong>+4 Living Embers · +1 Flame Essence Shard</strong></div></div>
             <section><h3 class="section-title">Actions on this Manifestation</h3><p class="flow-note">These Actions belong here—not in the global Creator Action list.</p><div class="button-row"><button class="action-button" data-demo-action="Commit Emberkin · Emberwell #2">Commit Emberkin</button><button class="quiet-button" disabled>Withdraw Emberkin</button><button class="danger-button" data-demo-action="Demanifest · Emberwell #2">Demanifest</button></div></section>
           </div>
           <div class="stack">${poolsPanel()}${resourcesPanel()}<section class="panel"><div class="panel-head"><h3>Emberheart</h3><span class="heart-icon">♥</span></div><div class="panel-body"><div class="row"><strong>Progress</strong><strong>1 / 3</strong></div><div class="progress" style="margin:8px 0"><span></span></div><div class="flow-note">Crucible fully staffed · +1 next Growth</div></div></section></div>
@@ -567,7 +582,7 @@
     }
 
     function cSupplyInspector() {
-      return `<section class="panel inspector"><div class="panel-head"><div><span class="subtle">Realm supply details</span><h3 style="margin-top:3px">Production and reserves</h3></div><span class="tag available">Stable this Cycle</span></div><div class="inspector-main"><div class="stack">${resourcesPanel()}<div class="review-card"><h3 class="section-title">Harvest projection</h3><div class="detail-stat"><span>Emberwell production</span><strong>+4 Living Embers · +1 Shard</strong></div><div class="detail-stat"><span>Emberkin Sustenance</span><strong>−6 Living Embers</strong></div><div class="detail-stat"><span>Expected balance</span><strong>5 Living Embers · 3/4 Shards</strong></div></div></div><div class="review-stack"><div class="review-card"><strong>Flame Essence</strong><p class="flow-note">1 available for a Manifestation. 3 remain committed to Emberheart.</p></div><div class="review-card"><strong>Essence formation</strong><p class="flow-note">The next operated Emberwell Harvest brings the Realm to 3/4 Shards; no new Essence forms this Cycle.</p></div></div></div><div class="action-dock"><div class="plan-summary"><span class="subtle">Projected Harvest</span><div><strong>Recover Unfed pressure</strong> · keep 5 Living Embers</div></div><button class="quiet-button" data-c-view="cycle">Open Cycle planner</button></div></section>`;
+      return `<section class="panel inspector"><div class="panel-head"><div><span class="subtle">Realm supply details</span><h3 style="margin-top:3px">Production and reserves</h3></div><span class="tag available">Stable this Cycle</span></div><div class="inspector-main"><div class="stack">${resourcesPanel()}<div class="review-card"><h3 class="section-title">Harvest projection</h3><div class="detail-stat"><span>Emberwell production</span><strong>+4 Living Embers · +1 Flame Essence Shard</strong></div><div class="detail-stat"><span>Emberkin Sustenance</span><strong>−6 Living Embers</strong></div><div class="detail-stat"><span>Expected balance</span><strong>5 Living Embers · 3/4 Flame Essence Shards</strong></div></div></div><div class="review-stack"><div class="review-card"><strong>Flame Essence</strong><p class="flow-note">1 available for a Manifestation. 3 remain committed to Emberheart.</p></div><div class="review-card"><strong>Flame Essence formation</strong><p class="flow-note">The next operated Emberwell Harvest brings the Realm to 3/4 Flame Essence Shards; no new Flame Essence forms this Cycle.</p></div></div></div><div class="action-dock"><div class="plan-summary"><span class="subtle">Projected Harvest</span><div><strong>Recover Unfed pressure</strong> · keep 5 Living Embers</div></div><button class="quiet-button" data-c-view="cycle">Open Cycle planner</button></div></section>`;
     }
 
     function variantC() {
