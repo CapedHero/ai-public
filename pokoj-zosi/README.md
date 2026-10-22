@@ -3,7 +3,7 @@
 Static comparison of five Biscuit Arch room concepts, dated 28 September–20 October 2026.
 
 - 48 visualizations, model views and plans, visually grouped by viewing direction.
-- Per-project galleries, two-project comparison, a comparison slider and a five-project overview.
+- Per-project galleries and a shared comparison view of all five projects, with individual visibility checkboxes and per-project image selection.
 - 34 shopping proposals transcribed from the corresponding designer emails, with original links and explicit unknowns.
 - Shopping checkboxes persist only in the visitor's local browser.
 - Source images were resized to a maximum of 1800 pixels and encoded as WebP. The original PAX PDF is included.
