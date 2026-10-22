@@ -13,3 +13,5 @@ The source material consists of designer attachments and product suggestions. Em
 Deploy by placing this directory at `pokoj-zosi/` in the root of the existing `CapedHero/ai-public` GitHub Pages source branch (`main`). Existing root pages remain intact. No build step or dependencies are needed.
 
 Visualizations and interior design: Biscuit Arch / Ewelina Skiterska. Viewpoint groups are approximate; source cameras differ between concepts.
+
+Shopping rows open their destination across the entire row; checkboxes remain independent. Eight missing destinations were supplemented on 2026-10-22 using IKEA system pages, an explicitly illustrative BenchK product, Lakfront wardrobe services and Fronteo curved fronts. Supplementary products and suppliers are identified in each affected note and are not attributed to the designer.
