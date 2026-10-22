@@ -15,3 +15,5 @@ Deploy by placing this directory at `pokoj-zosi/` in the root of the existing `C
 Visualizations and interior design: Biscuit Arch / Ewelina Skiterska. Viewpoint groups are approximate; source cameras differ between concepts.
 
 Shopping rows open their destination across the entire row; checkboxes remain independent. Eight missing destinations were supplemented on 2026-10-22 using IKEA system pages, an explicitly illustrative BenchK product, Lakfront wardrobe services and Fronteo curved fronts. Supplementary products and suppliers are identified in each affected note and are not attributed to the designer.
+
+Plan previews share a window-left / door-top-right orientation. Six source views have explicit non-destructive SVG viewports; the 20 October plan is rotated 180 degrees. Gallery, comparison and lightbox share this rendering. Original source images and direct full-size links remain intact.
