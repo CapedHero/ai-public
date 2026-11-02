@@ -1,9 +1,9 @@
 # Pokój Zosi
 
-Static comparison of five Biscuit Arch room concepts, dated 28 September–20 October 2026.
+Static comparison of six Biscuit Arch room concepts, dated 28 September–2 November 2026.
 
-- 48 visualizations, model views and plans, visually grouped by viewing direction.
-- Per-project galleries and a shared comparison view of all five projects, with individual visibility checkboxes and per-project image selection.
+- 57 visualizations, model views and plans, visually grouped by viewing direction.
+- Per-project galleries and a shared comparison view of all six projects, with individual visibility checkboxes and per-project image selection.
 - 34 shopping proposals transcribed from the corresponding designer emails, with original links and explicit unknowns.
 - Shopping checkboxes persist only in the visitor's local browser.
 - Source images were resized to a maximum of 1800 pixels and encoded as WebP. The original PAX PDF is included.
@@ -16,4 +16,6 @@ Visualizations and interior design: Biscuit Arch / Ewelina Skiterska. Viewpoint 
 
 Shopping rows open their destination across the entire row; checkboxes remain independent. Eight missing destinations were supplemented on 2026-10-22 using IKEA system pages, an explicitly illustrative BenchK product, Lakfront wardrobe services and Fronteo curved fronts. Supplementary products and suppliers are identified in each affected note and are not attributed to the designer.
 
-Plan previews share a window-left / door-top-right orientation. Six source views have explicit non-destructive SVG viewports; the 20 October plan is rotated 180 degrees. Gallery, comparison and lightbox share this rendering. Original source images and direct full-size links remain intact.
+Plan previews share a window-left / door-top-right orientation. Seven source views have explicit non-destructive SVG viewports; the 20 October and 2 November plans are rotated 180 degrees. Gallery, comparison and lightbox share this rendering. Original source images and direct full-size links remain intact.
+
+The 2 November version adds two renders, six model views and one plan. It contains no new shopping proposals. The inline historical reference plan and private correspondence screenshot were excluded.
